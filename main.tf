@@ -15,16 +15,19 @@ resource "aws_iam_role" "lambda_exec" {
 }
 
 resource "aws_lambda_function" "hello_world" {
-  function_name = "hello-world"
+  function_name = var.lambda_function_name
   role          = aws_iam_role.lambda_exec.arn
   handler       = "main.lambda_handler"
-  runtime       = "python3.9"
+  runtime       = var.lambda_runtime
   filename      = "${path.module}/lambda.zip"
 
   environment {
-    variables = {
-      MESSAGE = "Hello, World!"
-    }
+    variables = var.lambda_environment
+  }
+
+  # Enable AWS X-Ray tracing
+  tracing_config {
+    mode = "Active"
   }
 }
 
